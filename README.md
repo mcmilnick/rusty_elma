@@ -1,6 +1,6 @@
 # rusty_elma
 
-------------------------- Goals -------------------------
+///////////////////////////////////////// Goals /////////////////////////////////////////
 This repo aims to port the ELMA project into the programming language Rust. ELMA is a task management system developed by klavins (see the following link).
 https://github.com/klavins/ECEP520
 The ELMA manager aims to manage different processes for an embedded system. The goal of this project is to recreate this system using Rust.
@@ -9,7 +9,7 @@ For this project, I will be porting over the manager, process system, events and
 https://github.com/rust-lang
 While porting over the different pieces of ELMA, I will be writing test cases and examples to prove the functionality and give an idea how to use this new version of ELMA.  
   
------------------------------------ Milestones -----------------------------------
+///////////////////////////////////////// Milestones /////////////////////////////////////////
 1. Study Rust equivalents from C and C++. I aim to find the apprioriate ways to handle memory, do basic print debug, and what the structure types are in Rust.
 Deadline - 3/9/2019
 2. Implement and test Rust implementation of ELMA processes.
