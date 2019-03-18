@@ -3,28 +3,48 @@ extern crate colored;
 use colored::*;
 use std::time::{SystemTime, Instant, UNIX_EPOCH};
 
-fn gcd(mut n: u64, mut m: u64) -> u64 { assert!(n!=0 &&	m!=0);
-    while m!=0 {
-        if m < n {
-		    let t = m;
-			m = n;
-			n =	t;
-		}
-		m = m%n;
-	}
-	n
+mod process;
+mod channel;
+
+#[test]
+fn test_channel() {
+    //should be able to test now
 }
 
 #[test]
-fn test_gcd() {
-    assert_eq!(gcd(14,15),1);
-	assert_eq!(gcd(2*3*5*11*17, 3*7*11*13*19), 3*11);
+fn test_manager() {
+	let ans:std::vec::Vec<f64> = [1, 3, 6, 10, 15, 21, 28, 36, 45, 55];
+	/* need process for reciever and sender
+    elma::Manager m;
+    Sender sender("sender", vector<double>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+    Receiver receiver("receiver", 10);
+    elma::Channel data("Data");
+
+    m.schedule(sender, MS(10))
+    .schedule(receiver, MS(10))
+    .add_channel(data)
+    .init();
+    for(int i=0; i<ans.size(); i++){
+        m.run(MS(20));
+        EXPECT_DOUBLE_EQ(receiver.sum(), ans[i]);
+    }
+	*/
 }
 
 #[test]
 fn test_stopwatch() {
-    assert_eq!(gcd(14,15),1);
-	assert_eq!(gcd(2*3*5*11*17, 3*7*11*13*19), 3*11);
+	let start = SystemTime::now();
+	let mut s = stopwatch_mod::Stopwatch {
+	    sw_start_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards")
+	    ,sw_stop_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards")
+	    ,sw_total_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards")
+	};
+	stopwatch_mod::Stopwatch::start(&mut s);
+	let mut temp = stopwatch_mod::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
+	stopwatch_mod::Stopwatch::reset(&mut s);
+	temp = stopwatch_mod::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
+	stopwatch_mod::Stopwatch::stop(&mut s);
+	temp = stopwatch_mod::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
 }
 
 mod stopwatch_mod {
@@ -107,18 +127,7 @@ mod stopwatch_mod {
 fn main() {
     println!("{}", "App start".green());
 	
-	let start = SystemTime::now();
-	let mut s = stopwatch_mod::Stopwatch {
-	    sw_start_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards")
-	    ,sw_stop_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards")
-	    ,sw_total_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards")
-	};
-	stopwatch_mod::Stopwatch::start(&mut s);
-	let mut temp = stopwatch_mod::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
-	stopwatch_mod::Stopwatch::reset(&mut s);
-	temp = stopwatch_mod::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
-	stopwatch_mod::Stopwatch::stop(&mut s);
-	temp = stopwatch_mod::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
+
 	
 	println!("{}", "App end".green());
 	
