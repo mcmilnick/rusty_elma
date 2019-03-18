@@ -33,14 +33,14 @@ impl Channel {
     }
     //would like to figure out polymorphism in rust
     //use preexisting size fn
-    pub fn latest_db(&mut self)->f64 {
+    pub fn latest_db(&self)->f64 {
         match self._queue.get(0) {
             Some(x)=> { *x },
             None=> { return 0.0 },
         }
     }
     //use preexisting size
-    pub fn latest_vec(&mut self, n:usize)->Vec<f64> {
+    pub fn latest_vec(&self, n:usize)->Vec<f64> {
         let mut temp : Vec<f64> = Vec::new();
         for i in 0..n {
             match self._queue.get(i) {
@@ -50,7 +50,7 @@ impl Channel {
         }
         temp
     }
-    pub fn earliest(&mut self)->f64 {
+    pub fn earliest(&self)->f64 {
         match self._queue.back() {
             Some(x)=> { *x },
             None=> { return 0.0 }

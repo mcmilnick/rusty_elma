@@ -6,22 +6,41 @@ use std::collections::VecDeque;
 
 mod process;
 mod channel;
+mod manager;
 
 #[test]
 fn test_channel() {
     //should be able to test now
-	let data = channel::Channel {
+	let mut data = channel::Channel {
         _name:"Data".to_string(),
         _capacity:10,
         _queue:VecDeque::new(),
 	};
 
 	let test_str = "Data".to_string();
+	let test_cap:usize = 10;
 	assert_eq!(channel::Channel::size(&data), 0);
 	assert_eq!(channel::Channel::empty(&data), true);
 	assert_eq!(channel::Channel::nonempty(&data), false);
 	assert_eq!(channel::Channel::name(&data), &test_str);
-	assert_eq!(channel::Channel::capacity(&data), 10);
+	assert_eq!(channel::Channel::capacity(&data), &test_cap);
+
+	let mut test_vec:VecDeque<f64> = VecDeque::new();
+	test_vec.push_back(1.0);
+	test_vec.push_back(2.0);
+	test_vec.push_back(3.0);
+	test_vec.push_back(4.0);
+	channel::Channel::send(&mut data, 1.0);
+	channel::Channel::send(&mut data, 2.0);
+	channel::Channel::send(&mut data, 3.0);
+	channel::Channel::send(&mut data, 4.0);
+	assert_eq!(channel::Channel::size(&data), 4);
+
+	let mut test_val:f64 = 4.0;
+	assert_eq!(channel::Channel::capacity(&data), &test_cap);
+	assert_eq!(channel::Channel::latest_db(&data), test_val);
+	test_val = 1.0;
+	assert_eq!(channel::Channel::earliest(&data), test_val);
 }
 
 #[test]
