@@ -42,6 +42,13 @@ This week I accomplished a couple things.
 - I have begun implementing the Processes and Manager of ELMA, but still need to test them.
 - I figured out the proper way to test code in Rust
 
+////////////////////////////Working Code ////////////////////////////////////
+To see the current working code you can navigate into src/main.rs
+The main file contains a general stopwatch module and tests for all the other pieces of ELMA. I have properly implemented the test for channels which can be seen as...
+#[test]
+fn test_channel()
+In Rust, all functions marked with the test macro are run as tests when you run "cargo test". This testing tests all the basic functions.
+
 /////////////////////////////// Adjustments to goals /////////////////////////////
 With these things in mind, I still think the milestones given are achievable though the dates are skewed. I did not have as much time last week as I hoped I would, but that was mainly because it took me extra time to learn the language. I now feel more confident in the language, however, and think most of the rest can be done in short order. I am thinking if anything of dropping the state machine in order to spend a good amount of time properly documenting using Rust and Github.
 
