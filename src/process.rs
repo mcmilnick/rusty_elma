@@ -1,20 +1,22 @@
 extern crate colored;
 
-mod process_mod {
-	pub enum StatusEnum { UNINITIALIZED, STOPPED, RUNNING }
+use manager::Manager;
+
+pub enum StatusEnum { UNINITIALIZED, STOPPED, RUNNING }
 	
-	pub struct Process {
-		pub _period : std::time::Duration,
-        pub _previous_update : std::time::Duration,
-		pub _last_update : std::time::Duration,
-		pub _start_time : std::time::Duration,
+pub struct Process {
+	pub _period : std::time::Duration,
+    pub _previous_update : std::time::Duration,
+	pub _last_update : std::time::Duration,
+	pub _start_time : std::time::Duration,
 
-		pub _name : String,
-		pub _num_updates : i64,
+	pub _name : String,
+	pub _num_updates : i64,
 
-		pub _status : StatusEnum,
-        //need Manager * _manager_ptr; 
-	}
+	pub _status : StatusEnum,
+    //may need to use raw pointer
+    pub _manager_ptr : Manager,
+}
 /*
 	trait Process {
         virtual void init() = 0;
@@ -51,4 +53,3 @@ mod process_mod {
         void _stop();
 	}
 */
-}
