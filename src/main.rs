@@ -2,6 +2,7 @@ extern crate colored;
 
 use colored::*;
 use std::time::{SystemTime, Instant, UNIX_EPOCH};
+use std::collections::VecDeque;
 
 mod process;
 mod channel;
@@ -9,11 +10,23 @@ mod channel;
 #[test]
 fn test_channel() {
     //should be able to test now
+	let data = channel::Channel {
+        _name:"Data".to_string(),
+        _capacity:10,
+        _queue:VecDeque::new(),
+	};
+
+	let test_str = "Data".to_string();
+	assert_eq!(channel::Channel::size(&data), 0);
+	assert_eq!(channel::Channel::empty(&data), true);
+	assert_eq!(channel::Channel::nonempty(&data), false);
+	assert_eq!(channel::Channel::name(&data), &test_str);
+	assert_eq!(channel::Channel::capacity(&data), 10);
 }
 
 #[test]
 fn test_manager() {
-	let ans:std::vec::Vec<f64> = [1, 3, 6, 10, 15, 21, 28, 36, 45, 55];
+	//let ans:std::vec::Vec<f64> = [1, 3, 6, 10, 15, 21, 28, 36, 45, 55];
 	/* need process for reciever and sender
     elma::Manager m;
     Sender sender("sender", vector<double>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
@@ -35,9 +48,9 @@ fn test_manager() {
 fn test_stopwatch() {
 	let start = SystemTime::now();
 	let mut s = stopwatch_mod::Stopwatch {
-	    sw_start_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards")
-	    ,sw_stop_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards")
-	    ,sw_total_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards")
+	    sw_start_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards"),
+		sw_stop_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards"),
+		sw_total_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards")
 	};
 	stopwatch_mod::Stopwatch::start(&mut s);
 	let mut temp = stopwatch_mod::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
