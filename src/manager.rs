@@ -7,6 +7,7 @@ use process::Process;
 use process;
 use channel::Channel;
 
+//a large portion of the running pieces need to be pulled out of manager because it involves cyclic data ownership of processes and manager
 pub struct Manager<'a> {
     pub _processes : Vec<&'a Process>,
     pub _channels : HashMap<String, &'a Channel>,
@@ -34,55 +35,12 @@ impl<'a> Manager<'a> {
         }
     }
     pub fn drop(p : &'a Process) {}
-    pub fn all(&self, f : &dyn Fn(&Process)) {
-        for i in 0..self._processes.len() {
-            match self._processes.get(i) {
-                Some(proc_ptr)=> { f(proc_ptr); },
-                None=> {},
-            }
-        }
-    }
-    pub fn init(&self) {
-        let myfunc = |p : &Process| process::Process::_init();
-        Manager::all(&self, &myfunc);
-    }
-    pub fn start(&self) {
-        let myfunc = |p : &Process| process::Process::_start(self._elapsed);
-        Manager::all(&self, &myfunc);
-    }
-    pub fn stop(&self) {
-        let myfunc = |p : &Process| process::Process::_stop();
-        Manager::all(&self, &myfunc);
-    }
-    pub fn update(&self) {
-        let myfunc = |p : &Process|
-            if self._elapsed > process::Process::last_update(&p) + process::Process::period(&p) {
-                process::Process::_update(self._elapsed);
-            };
-        Manager::all(&self, &myfunc);
-    }
-    pub fn run(&mut self, runtime : std::time::Duration) {
-        let starter = std::time::SystemTime::now();
-        self._start_time = starter.duration_since(std::time::UNIX_EPOCH)
-            .expect("Time went backwards");
-        Manager::start(&self);
-
-        while self._elapsed < runtime {
-            Manager::update(&self);
-            let temp = std::time::SystemTime::now();
-            self._elapsed = temp.duration_since(std::time::UNIX_EPOCH)
-                .expect("Time went backwards")
-                - self._start_time;
-        }
-
-        Manager::stop(&self);
-    }
-    pub fn ps(&self)->HashMap<String, (String, u64, f64, i64)> {
-        let mut info : HashMap<String, (String, u64, f64, i64)> = HashMap::new();
+    pub fn ps(&self)->HashMap<String, (String, u64, u64, i64)> {
+        let mut info : HashMap<String, (String, u64, u64, i64)> = HashMap::new();
 
         let f1 = |p : &Process| process::Process::status_type_map(p);
         let f2 = |p : &Process| process::Process::milli_time(p);
-        let f3 = |p : &Process| process::Process::delta();
+        let f3 = |p : &Process| process::Process::delta(p);
         let f4 = |p : &Process| process::Process::num_updates(p);
         let f5 = |p : &Process| process::Process::name(p).to_string();
 

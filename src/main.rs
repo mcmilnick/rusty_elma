@@ -3,6 +3,7 @@ extern crate colored;
 use colored::*;
 use std::time::{SystemTime, Instant, UNIX_EPOCH};
 use std::collections::VecDeque;
+use std::collections::HashMap;
 
 mod process;
 mod channel;
@@ -43,15 +44,11 @@ fn test_channel() {
 	assert_eq!(channel::Channel::earliest(&data), test_val);
 }
 
+//be aware I am throwing out the pointer system for manager pointer and need a new manager runner class
+//also need replacement virtual classes from process in new mod
 #[test]
 fn test_manager() {
-	//let ans:std::vec::Vec<f64> = [1, 3, 6, 10, 15, 21, 28, 36, 45, 55];
 	/* need process for reciever and sender
-    elma::Manager m;
-    Sender sender("sender", vector<double>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
-    Receiver receiver("receiver", 10);
-    elma::Channel data("Data");
-
     m.schedule(sender, MS(10))
     .schedule(receiver, MS(10))
     .add_channel(data)
@@ -61,6 +58,69 @@ fn test_manager() {
         EXPECT_DOUBLE_EQ(receiver.sum(), ans[i]);
     }
 	*/
+	let starter = std::time::SystemTime::now();
+	let dur_temp = starter.duration_since(std::time::UNIX_EPOCH)
+	    	.expect("Time went backwards");
+	let mut elma = manager::Manager {
+		_processes : std::vec::Vec::new(),
+    	_channels : HashMap::<String, &channel::Channel>::new(),
+    	_start_time : dur_temp,
+		_elapsed : dur_temp,
+	};
+	let mut sender = process::Process {
+		_period : dur_temp,
+		_previous_update : dur_temp,
+		_last_update : dur_temp,
+		_start_time : std::time::SystemTime::now(),
+		_name : "sender".to_string(),
+		_num_updates : 0,
+		_status : process::StatusEnum::UNINITIALIZED,
+	};
+	let mut reciever = process::Process {
+		_period : dur_temp,
+		_previous_update : dur_temp,
+		_last_update : dur_temp,
+		_start_time : std::time::SystemTime::now(),
+		_name : "reciever".to_string(),
+		_num_updates : 0,
+		_status : process::StatusEnum::UNINITIALIZED,	
+	};
+	let mut data = channel::Channel {
+        _name:"Data".to_string(),
+        _capacity:10,
+        _queue:VecDeque::new(),
+	};
+
+	//init, start, update, stop need done from here since we can not have nested self refs in rust
+	//may be worth adding into manager later by declaring the actual processes instead of references:
+	//I may store the processes as traits
+	elma._elapsed = starter.duration_since(std::time::UNIX_EPOCH)
+	    .expect("Time went backwards");
+	process::Process::_init(&mut sender);
+	process::Process::_init(&mut reciever); 
+
+    elma._start_time = starter.duration_since(std::time::UNIX_EPOCH)
+        .expect("Time went backwards");
+	process::Process::_start(&mut sender, elma._elapsed);
+	process::Process::_start(&mut reciever, elma._elapsed);
+
+	let runtime = std::time::Duration::new(20, 0);;
+    while elma._elapsed < runtime {
+		if elma._elapsed > process::Process::last_update(&sender) + process::Process::period(&sender) {
+			process::Process::_update(&mut sender, elma._elapsed);
+		};
+		if elma._elapsed > process::Process::last_update(&reciever) + process::Process::period(&reciever) {
+			process::Process::_update(&mut sender, elma._elapsed);
+		};
+
+		let temp = std::time::SystemTime::now();
+		elma._elapsed = temp.duration_since(std::time::UNIX_EPOCH)
+			.expect("Time went backwards")
+			- elma._start_time;
+    }
+
+    process::Process::_stop(&mut sender);
+	process::Process::_stop(&mut reciever);
 }
 
 #[test]
