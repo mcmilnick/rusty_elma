@@ -1,13 +1,9 @@
-extern crate colored;
-
-use std::collections::VecDeque;
 use std::vec::Vec;
 use std::collections::HashMap;
 use process::Process;
-use process;
 use channel::Channel;
 
-//a large portion of the running pieces need to be pulled out of manager because it involves cyclic data ownership of processes and manager
+#[allow(dead_code)]
 pub struct Manager<'a> {
     pub _processes : Vec<&'a Process>,
     pub _channels : HashMap<String, &'a mut Channel>,
@@ -15,6 +11,7 @@ pub struct Manager<'a> {
 	pub _elapsed : std::time::Duration,
 }
 
+#[allow(dead_code)]
 impl<'a> Manager<'a> {
     pub fn start_time(&self)->std::time::Duration { self._start_time }
     pub fn elapsed(&self)->std::time::Duration { self._elapsed }

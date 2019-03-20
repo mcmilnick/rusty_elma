@@ -1,12 +1,14 @@
 use std::collections::VecDeque;
 use std::vec::Vec;
-    
+
+#[allow(dead_code)]
 pub struct Channel {
     pub _name : String,
     pub _capacity : usize,
     pub _queue : VecDeque<f64>,
 }
 
+#[allow(dead_code)]
 impl Channel {
     pub fn size(&self)->usize { self._queue.len() }
     pub fn empty(&self)->bool { self._queue.len() == 0 }    

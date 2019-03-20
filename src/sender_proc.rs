@@ -31,12 +31,12 @@ impl Process for Sender {
     fn set_num_update(&mut self, nu:i64) { self._num_updates = nu; }
 
     //overshadows the traits method
-    fn _update(&mut self, c : &mut Channel, elapsed : std::time::Duration) {
+    fn _update(&mut self, _c : &mut Channel, _elapsed : std::time::Duration) {
         self._previous_update = self._last_update;
-        self._last_update = elapsed;
+        self._last_update = _elapsed;
         self._num_updates =  self._num_updates + 1;
 
-        c.send(self._data[self._idx]);
+        _c.send(self._data[self._idx]);
         self._idx = self._idx + 1;
         if self._idx==self._data.len() { self._idx=0; }
     }

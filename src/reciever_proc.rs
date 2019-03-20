@@ -1,4 +1,3 @@
-use std::vec::Vec;
 use channel::Channel;
 use process::*;
 
@@ -31,14 +30,14 @@ impl Process for Reciever {
     fn set_num_update(&mut self, nu:i64) { self._num_updates = nu; }
 
     //overshadows the traits method
-    fn _update(&mut self, c : &mut Channel, elapsed : std::time::Duration) {
+    fn _update(&mut self, _c : &mut Channel, _elapsed : std::time::Duration) {
         self._previous_update = self._last_update;
-        self._last_update = elapsed;
+        self._last_update = _elapsed;
         self._num_updates =  self._num_updates + 1;
 
-        if(c.nonempty()){
+        if _c.nonempty() {
             self._sum = 0.0;
-            let data = c.latest_vec(c.size());
+            let data = _c.latest_vec(_c.size());
             self._sum = data.iter().sum(); 
             println!("recieved sum is: {:?}", self._sum);
         }
