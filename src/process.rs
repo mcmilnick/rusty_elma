@@ -1,61 +1,54 @@
+use channel::Channel;
+
 #[repr(u8)]
 pub enum StatusEnum { UNINITIALIZED=0, STOPPED, RUNNING }
 
-//virtual functions that were part of Process need to be implemented in their own mod with an instance of a process
-pub struct Process {
-	pub _period : std::time::Duration,
-    pub _previous_update : std::time::Duration,
-	pub _last_update : std::time::Duration,
-	pub _start_time : std::time::SystemTime,
+pub trait Process {
+    /////////////////// Any functions specific to certain impl /////////////////////////
+    fn sum(&self)->f64 { return 0.0; }
+    fn _update(&mut self, c : &mut Channel, elapsed : std::time::Duration) {}
 
-	pub _name : String,
-	pub _num_updates : i64,
 
-	pub _status : StatusEnum,
-}
+    /////////////////// Basic functions to grab constant struct data /////////////////////////////
+    fn period(&self)->std::time::Duration;
+    fn previous_update(&self)->std::time::Duration;
+    fn last_update(&self)->std::time::Duration;
+    fn start_time(&self)->std::time::SystemTime;
+	fn name(&self)->&String;
+    fn num_updates(&self)->i64;
+    fn status(&self)->&StatusEnum;
+    fn set_status(&mut self, status : StatusEnum);
+    fn set_start_time(&mut self, st:std::time::SystemTime);
+    fn set_prev_update(&mut self, pu:std::time::Duration);
+    fn set_last_update(&mut self, lu:std::time::Duration);
+    fn set_num_update(&mut self, nu:i64);
 
-impl Process {
-    pub fn period(&self)->std::time::Duration { return self._period }
-    pub fn last_update(&self)->std::time::Duration { return self._last_update }
-	pub fn name(&self)->&String { return &self._name }
-    pub fn status(&self)->&StatusEnum { return &self._status }
-    pub fn num_updates(&self)->i64 { return self._num_updates }
-    pub fn start_time(&self)->std::time::SystemTime { return self._start_time }
-    pub fn previous_update(&self)->std::time::Duration { return self._previous_update }
-    pub fn milli_time(&self)->u64 {
+    ///////////////// Functions which should be good over all impl using Process ///////////////////
+    fn milli_time(&self)->u64 {
         let temp_time = Process::last_update(self);
     	temp_time.as_secs() * 1000 as u64
     }
-    pub fn status_type_map(&self)->String {
-        match &self._status {
+    fn status_type_map(&self)->String {
+        match Process::status(self) {
             UNINITIALIZED => return "UNINITIALIZED".to_string(),
             STOPPED => return "STOPPED".to_string(),
             RUNNING => return "RUNNING".to_string(),
         }
 	}
-    pub fn delta(&self)->u64 {
+    fn delta(&self)->u64 {
         let temp_time = Process::last_update(self) - Process::previous_update(self);
     	temp_time.as_secs() * 1000 as u64
     }
-
-    //need to redo all below here
-
-	// Manager interface
-    pub fn _init(&mut self) {
-        self._status = StatusEnum::STOPPED;
+    fn _init(&mut self) {
+        Process::set_status(self, StatusEnum::STOPPED);
     }
-    pub fn _start(&mut self, elapsed : std::time::Duration) {
-        self._status = StatusEnum::RUNNING; 
-        self._start_time = std::time::SystemTime::now();
-        self._last_update = elapsed;
-        self._num_updates = 0;
+    fn _stop(&mut self) {
+        Process::set_status(self, StatusEnum::STOPPED);
     }
-    pub fn _update(&mut self, elapsed : std::time::Duration) {
-        self._previous_update = self._last_update;
-        self._last_update = elapsed;
-        self._num_updates =  self._num_updates + 1;
-    }
-    pub fn _stop(&mut self) {
-        self._status = StatusEnum::STOPPED;
+    fn _start(&mut self, elapsed : std::time::Duration) {
+        Process::set_status(self, StatusEnum::RUNNING);
+        Process::set_start_time(self, std::time::SystemTime::now());
+        Process::set_last_update(self, elapsed);
+        Process::set_num_update(self, 0);
     }
 }

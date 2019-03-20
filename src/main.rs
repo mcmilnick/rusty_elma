@@ -4,6 +4,8 @@ use colored::*;
 use std::time::{SystemTime, Instant, UNIX_EPOCH};
 use std::collections::VecDeque;
 use std::collections::HashMap;
+use process::*;
+use reciever_proc::Reciever;
 
 mod process;
 mod channel;
@@ -11,86 +13,6 @@ mod manager;
 mod stopwatch;
 mod sender_proc;
 mod reciever_proc;
-
-//be aware I am throwing out the pointer system for manager pointer and need a new manager runner class
-//also need replacement virtual classes from process in new mod
-#[test]
-fn test_manager() {
-	let starter = std::time::SystemTime::now();
-	let dur_temp = starter.duration_since(std::time::UNIX_EPOCH)
-	    	.expect("Time went backwards");
-	let mut elma = manager::Manager {
-		_processes : std::vec::Vec::new(),
-    	_channels : HashMap::<String, &mut channel::Channel>::new(),
-    	_start_time : dur_temp,
-		_elapsed : dur_temp,
-	};
-
-	let mut sendvec = vec![1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0];
-	let mut sender = sender_proc::Sender {
-		_idx : 0,
-		_data : sendvec,
-		_period : dur_temp,
-		_previous_update : dur_temp,
-		_last_update : dur_temp,
-		_start_time : std::time::SystemTime::now(),
-		_name : "sender".to_string(),
-		_num_updates : 0,
-		_status : sender_proc::StatusEnum::UNINITIALIZED,
-	};
-	let mut reciever = reciever_proc::Reciever {
-		_n : 0,
-		_sum : 0.0,
-		_period : dur_temp,
-		_previous_update : dur_temp,
-		_last_update : dur_temp,
-		_start_time : std::time::SystemTime::now(),
-		_name : "reciever".to_string(),
-		_num_updates : 0,
-		_status : reciever_proc::StatusEnum::UNINITIALIZED,	
-	};
-	let mut data = channel::Channel {
-        _name:"Data".to_string(),
-        _capacity:10,
-        _queue:VecDeque::new(),
-	};
-
-	sender._period = std::time::Duration::new(1, 0);
-	sender._period = std::time::Duration::new(1, 0);
-
-	//init, start, update, stop need done from here since we can not have nested self refs in rust
-	//may be worth adding into manager later by declaring the actual processes instead of references:
-	//I may store the processes as traits
-	elma._elapsed = starter.duration_since(std::time::UNIX_EPOCH)
-	    .expect("Time went backwards");
-	sender_proc::Sender::_init(&mut sender);
-	reciever_proc::Reciever::_init(&mut reciever); 
-
-    elma._start_time = starter.duration_since(std::time::UNIX_EPOCH)
-        .expect("Time went backwards");
-	sender_proc::Sender::_start(&mut sender, elma._elapsed);
-	reciever_proc::Reciever::_start(&mut reciever, elma._elapsed);
-
-	println!("{}", "manager start".green());
-	let runtime = std::time::Duration::new(20, 0);
-    while elma._elapsed < runtime {
-		if elma._elapsed > sender_proc::Sender::last_update(&sender) + sender_proc::Sender::period(&sender) {
-			sender_proc::Sender::_update(&mut sender, &mut data, elma._elapsed);
-		};
-		if elma._elapsed > reciever_proc::Reciever::last_update(&reciever) + reciever_proc::Reciever::period(&reciever) {
-			reciever_proc::Reciever::_update(&mut reciever, &mut data, elma._elapsed);
-		};
-
-		let temp = std::time::SystemTime::now();
-		elma._elapsed = temp.duration_since(std::time::UNIX_EPOCH)
-			.expect("Time went backwards")
-			- elma._start_time;
-    }
-
-    sender_proc::Sender::_stop(&mut sender);
-	reciever_proc::Reciever::_stop(&mut reciever);
-	println!("{}", "maanager stop".green());
-}
 
 /////////////////////////// finished tests /////////////////////////
 #[test]
@@ -168,7 +90,7 @@ fn main() {
 		_num_updates : 0,
 		_status : sender_proc::StatusEnum::UNINITIALIZED,
 	};
-	let mut reciever = reciever_proc::Reciever {
+	let mut reciever = Reciever {
 		_n : 0,
 		_sum : 0.0,
 		_period : dur_temp,
@@ -177,7 +99,7 @@ fn main() {
 		_start_time : std::time::SystemTime::now(),
 		_name : "reciever".to_string(),
 		_num_updates : 0,
-		_status : reciever_proc::StatusEnum::UNINITIALIZED,	
+		_status : StatusEnum::UNINITIALIZED,	
 	};
 	let mut data = channel::Channel {
         _name:"Data".to_string(),
@@ -192,7 +114,7 @@ fn main() {
 	//may be worth adding into manager later by declaring the actual processes instead of references:
 	//I may store the processes as traits
 	sender_proc::Sender::_init(&mut sender);
-	reciever_proc::Reciever::_init(&mut reciever); 
+	<Reciever as Process>::_init(&mut reciever); 
 
     elma._start_time = starter.duration_since(std::time::UNIX_EPOCH)
         .expect("Time went backwards");
@@ -200,7 +122,7 @@ fn main() {
 	    .expect("Time went backwards") - elma._start_time;
 
 	sender_proc::Sender::_start(&mut sender, elma._elapsed);
-	reciever_proc::Reciever::_start(&mut reciever, elma._elapsed);
+	<Reciever as Process>::_start(&mut reciever, elma._elapsed);
 
 	println!("{}", "manager start".green());
 	let runtime = std::time::Duration::new(20, 0);
@@ -208,8 +130,8 @@ fn main() {
 		if elma._elapsed > sender_proc::Sender::last_update(&sender) + sender_proc::Sender::period(&sender) {
 			sender_proc::Sender::_update(&mut sender, &mut data, elma._elapsed);
 		};
-		if elma._elapsed > reciever_proc::Reciever::last_update(&reciever) + reciever_proc::Reciever::period(&reciever) {
-			reciever_proc::Reciever::_update(&mut reciever, &mut data, elma._elapsed);
+		if elma._elapsed > <Reciever as Process>::last_update(&reciever) + <Reciever as Process>::period(&reciever) {
+			<Reciever as Process>::_update(&mut reciever, &mut data, elma._elapsed);
 		};
 
 		let temp = std::time::SystemTime::now();
@@ -219,7 +141,7 @@ fn main() {
     }
 
     sender_proc::Sender::_stop(&mut sender);
-	reciever_proc::Reciever::_stop(&mut reciever);
+	<Reciever as Process>::_stop(&mut reciever);
 	println!("{}", "maanager stop".green());
 	println!("{}", "App end".green());
 }

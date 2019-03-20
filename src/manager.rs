@@ -21,7 +21,7 @@ impl<'a> Manager<'a> {
     pub fn add_channel(&mut self, c : &'a mut Channel) {
         self._channels.insert(c.name().to_string(), c);
     }
-    pub fn schedule(&mut self, p : &'a mut Process, period : std::time::Duration) {
+    /*pub fn schedule(&mut self, p : &'a mut Process, period : std::time::Duration) {
         p._period = period;
         self._processes.push(p);
     }
@@ -45,5 +45,5 @@ impl<'a> Manager<'a> {
             }
         }
         return info;
-    }
+    }*/
 }
