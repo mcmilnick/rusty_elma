@@ -6,6 +6,7 @@ use std::collections::VecDeque;
 use std::collections::HashMap;
 use process::*;
 use reciever_proc::Reciever;
+use sender_proc::Sender;
 
 mod process;
 mod channel;
@@ -67,8 +68,7 @@ fn test_channel() {
 }
 
 fn main() {
-    println!("{}", "App start".green());
-		let starter = std::time::SystemTime::now();
+	let starter = std::time::SystemTime::now();
 	let dur_temp = starter.duration_since(std::time::UNIX_EPOCH)
 	    	.expect("Time went backwards");
 	let mut elma = manager::Manager {
@@ -79,7 +79,7 @@ fn main() {
 	};
 
 	let mut sendvec = vec![1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0];
-	let mut sender = sender_proc::Sender {
+	let mut sender = Sender {
 		_idx : 0,
 		_data : sendvec,
 		_period : dur_temp,
@@ -88,7 +88,7 @@ fn main() {
 		_start_time : std::time::SystemTime::now(),
 		_name : "sender".to_string(),
 		_num_updates : 0,
-		_status : sender_proc::StatusEnum::UNINITIALIZED,
+		_status : StatusEnum::UNINITIALIZED,
 	};
 	let mut reciever = Reciever {
 		_n : 0,
@@ -113,25 +113,25 @@ fn main() {
 	//init, start, update, stop need done from here since we can not have nested self refs in rust
 	//may be worth adding into manager later by declaring the actual processes instead of references:
 	//I may store the processes as traits
-	sender_proc::Sender::_init(&mut sender);
-	<Reciever as Process>::_init(&mut reciever); 
+	Sender::_init(&mut sender);
+	Reciever::_init(&mut reciever); 
 
     elma._start_time = starter.duration_since(std::time::UNIX_EPOCH)
         .expect("Time went backwards");
 	elma._elapsed = starter.duration_since(std::time::UNIX_EPOCH)
 	    .expect("Time went backwards") - elma._start_time;
 
-	sender_proc::Sender::_start(&mut sender, elma._elapsed);
-	<Reciever as Process>::_start(&mut reciever, elma._elapsed);
+	Sender::_start(&mut sender, elma._elapsed);
+	Reciever::_start(&mut reciever, elma._elapsed);
 
 	println!("{}", "manager start".green());
 	let runtime = std::time::Duration::new(20, 0);
     while elma._elapsed < runtime {
-		if elma._elapsed > sender_proc::Sender::last_update(&sender) + sender_proc::Sender::period(&sender) {
-			sender_proc::Sender::_update(&mut sender, &mut data, elma._elapsed);
+		if elma._elapsed > Sender::last_update(&sender) + Sender::period(&sender) {
+			Sender::_update(&mut sender, &mut data, elma._elapsed);
 		};
-		if elma._elapsed > <Reciever as Process>::last_update(&reciever) + <Reciever as Process>::period(&reciever) {
-			<Reciever as Process>::_update(&mut reciever, &mut data, elma._elapsed);
+		if elma._elapsed > Reciever::last_update(&reciever) + Reciever::period(&reciever) {
+			Reciever::_update(&mut reciever, &mut data, elma._elapsed);
 		};
 
 		let temp = std::time::SystemTime::now();
@@ -140,8 +140,7 @@ fn main() {
 			- elma._start_time;
     }
 
-    sender_proc::Sender::_stop(&mut sender);
-	<Reciever as Process>::_stop(&mut reciever);
+    Sender::_stop(&mut sender);
+	Reciever::_stop(&mut reciever);
 	println!("{}", "maanager stop".green());
-	println!("{}", "App end".green());
 }
