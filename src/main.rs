@@ -67,7 +67,9 @@ fn test_channel() {
 	assert_eq!(channel::Channel::earliest(&data), test_val);
 }
 
-fn main() {
+#[test]
+fn test_manager_basic() {
+	//when testing, you can pass cargo test -- --nocapture to see printout of realtime values
 	let starter = SystemTime::now();
 	let dur_temp = starter.duration_since(UNIX_EPOCH).expect("Time went backwards");
 	let mut elma = manager::Manager {
@@ -109,9 +111,6 @@ fn main() {
 	sender._period = Duration::new(1, 0);
 	reciever._period = Duration::new(1, 0);
 
-	//init, start, update, stop need done from here since we can not have nested self refs in rust
-	//may be worth adding into manager later by declaring the actual processes instead of references:
-	//I may store the processes as traits
 	Sender::_init(&mut sender);
 	Reciever::_init(&mut reciever); 
 
@@ -138,4 +137,8 @@ fn main() {
     Sender::_stop(&mut sender);
 	Reciever::_stop(&mut reciever);
 	println!("{}", "maanager stop".green());
+}
+
+fn main() {
+	
 }
