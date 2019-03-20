@@ -10,7 +10,7 @@ use channel::Channel;
 //a large portion of the running pieces need to be pulled out of manager because it involves cyclic data ownership of processes and manager
 pub struct Manager<'a> {
     pub _processes : Vec<&'a Process>,
-    pub _channels : HashMap<String, &'a Channel>,
+    pub _channels : HashMap<String, &'a mut Channel>,
     pub _start_time : std::time::Duration,
 	pub _elapsed : std::time::Duration,
 }
@@ -18,7 +18,7 @@ pub struct Manager<'a> {
 impl<'a> Manager<'a> {
     pub fn start_time(&self)->std::time::Duration { self._start_time }
     pub fn elapsed(&self)->std::time::Duration { self._elapsed }
-    pub fn add_channel(&mut self, c : &'a Channel) {
+    pub fn add_channel(&mut self, c : &'a mut Channel) {
         self._channels.insert(c.name().to_string(), c);
     }
     pub fn schedule(&mut self, p : &'a mut Process, period : std::time::Duration) {
@@ -27,12 +27,6 @@ impl<'a> Manager<'a> {
         //this should be a manager pointer, but to pass a reference to self is a terrible idea in rust
         //come back to solve - only effects channel call in process
         //p._manager_ptr = self;
-    }
-    pub fn channel(&self, s : String)->&'a Channel {
-        match self._channels.get(&s) {
-            Some(a_Channel) => { return a_Channel },
-            None => { panic!("no channel"); },
-        }
     }
     pub fn drop(p : &'a Process) {}
     pub fn ps(&self)->HashMap<String, (String, u64, u64, i64)> {

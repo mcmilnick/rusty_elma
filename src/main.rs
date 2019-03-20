@@ -30,18 +30,22 @@ fn test_manager() {
 	    	.expect("Time went backwards");
 	let mut elma = manager::Manager {
 		_processes : std::vec::Vec::new(),
-    	_channels : HashMap::<String, &channel::Channel>::new(),
+    	_channels : HashMap::<String, &mut channel::Channel>::new(),
     	_start_time : dur_temp,
 		_elapsed : dur_temp,
 	};
-	let mut sender = process::Process {
+
+	let mut sendvec = vec![1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0];
+	let mut sender = sender_proc::Sender {
+		_idx : 0,
+		_data : sendvec,
 		_period : dur_temp,
 		_previous_update : dur_temp,
 		_last_update : dur_temp,
 		_start_time : std::time::SystemTime::now(),
 		_name : "sender".to_string(),
 		_num_updates : 0,
-		_status : process::StatusEnum::UNINITIALIZED,
+		_status : sender_proc::StatusEnum::UNINITIALIZED,
 	};
 	let mut reciever = process::Process {
 		_period : dur_temp,
@@ -63,22 +67,22 @@ fn test_manager() {
 	//I may store the processes as traits
 	elma._elapsed = starter.duration_since(std::time::UNIX_EPOCH)
 	    .expect("Time went backwards");
-	process::Process::_init(&mut sender);
+	sender_proc::Sender::_init(&mut sender);
 	process::Process::_init(&mut reciever); 
 
     elma._start_time = starter.duration_since(std::time::UNIX_EPOCH)
         .expect("Time went backwards");
-	process::Process::_start(&mut sender, elma._elapsed);
+	sender_proc::Sender::_start(&mut sender, elma._elapsed);
 	process::Process::_start(&mut reciever, elma._elapsed);
 
 	println!("{}", "manager start".green());
 	let runtime = std::time::Duration::new(20, 0);;
     while elma._elapsed < runtime {
-		if elma._elapsed > process::Process::last_update(&sender) + process::Process::period(&sender) {
-			process::Process::_update(&mut sender, elma._elapsed);
+		if elma._elapsed > sender_proc::Sender::last_update(&sender) + sender_proc::Sender::period(&sender) {
+			sender_proc::Sender::_update(&mut sender, &mut data, elma._elapsed);
 		};
 		if elma._elapsed > process::Process::last_update(&reciever) + process::Process::period(&reciever) {
-			process::Process::_update(&mut sender, elma._elapsed);
+			process::Process::_update(&mut reciever, elma._elapsed);
 		};
 
 		let temp = std::time::SystemTime::now();
@@ -87,7 +91,7 @@ fn test_manager() {
 			- elma._start_time;
     }
 
-    process::Process::_stop(&mut sender);
+    sender_proc::Sender::_stop(&mut sender);
 	process::Process::_stop(&mut reciever);
 	println!("{}", "maanager stop".green());
 }
