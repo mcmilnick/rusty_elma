@@ -72,9 +72,5 @@ impl Sender {
 /////////////////// theoretically these would be virtual
     pub fn init() {}
     pub fn start() {}
-    pub fn update(&mut self, c : &mut Channel) {
-        c.send(self._data[self._idx]);
-        self._idx = self._idx + 1;
-        if self._idx==self._data.len() { self._idx=0; }
-    }
+    pub fn update(&mut self, c : &mut Channel) {}
 }

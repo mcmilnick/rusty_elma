@@ -24,9 +24,6 @@ impl<'a> Manager<'a> {
     pub fn schedule(&mut self, p : &'a mut Process, period : std::time::Duration) {
         p._period = period;
         self._processes.push(p);
-        //this should be a manager pointer, but to pass a reference to self is a terrible idea in rust
-        //come back to solve - only effects channel call in process
-        //p._manager_ptr = self;
     }
     pub fn drop(p : &'a Process) {}
     pub fn ps(&self)->HashMap<String, (String, u64, u64, i64)> {

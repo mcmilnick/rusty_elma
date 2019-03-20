@@ -1,1 +1,1 @@
-/source/target/debug/rust_build: /source/src/channel.rs /source/src/main.rs /source/src/manager.rs /source/src/process.rs
+/source/target/debug/rust_build: /source/src/channel.rs /source/src/main.rs /source/src/manager.rs /source/src/process.rs /source/src/reciever_proc.rs /source/src/sender_proc.rs /source/src/stopwatch.rs
