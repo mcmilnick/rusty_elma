@@ -8,41 +8,8 @@ use std::collections::HashMap;
 mod process;
 mod channel;
 mod manager;
-
-#[test]
-fn test_channel() {
-    //should be able to test now
-	let mut data = channel::Channel {
-        _name:"Data".to_string(),
-        _capacity:10,
-        _queue:VecDeque::new(),
-	};
-
-	let test_str = "Data".to_string();
-	let test_cap:usize = 10;
-	assert_eq!(channel::Channel::size(&data), 0);
-	assert_eq!(channel::Channel::empty(&data), true);
-	assert_eq!(channel::Channel::nonempty(&data), false);
-	assert_eq!(channel::Channel::name(&data), &test_str);
-	assert_eq!(channel::Channel::capacity(&data), &test_cap);
-
-	let mut test_vec:VecDeque<f64> = VecDeque::new();
-	test_vec.push_back(1.0);
-	test_vec.push_back(2.0);
-	test_vec.push_back(3.0);
-	test_vec.push_back(4.0);
-	channel::Channel::send(&mut data, 1.0);
-	channel::Channel::send(&mut data, 2.0);
-	channel::Channel::send(&mut data, 3.0);
-	channel::Channel::send(&mut data, 4.0);
-	assert_eq!(channel::Channel::size(&data), 4);
-
-	let mut test_val:f64 = 4.0;
-	assert_eq!(channel::Channel::capacity(&data), &test_cap);
-	assert_eq!(channel::Channel::latest_db(&data), test_val);
-	test_val = 1.0;
-	assert_eq!(channel::Channel::earliest(&data), test_val);
-}
+mod stopwatch;
+mod sender_proc;
 
 //be aware I am throwing out the pointer system for manager pointer and need a new manager runner class
 //also need replacement virtual classes from process in new mod
@@ -104,6 +71,7 @@ fn test_manager() {
 	process::Process::_start(&mut sender, elma._elapsed);
 	process::Process::_start(&mut reciever, elma._elapsed);
 
+	println!("{}", "manager start".green());
 	let runtime = std::time::Duration::new(20, 0);;
     while elma._elapsed < runtime {
 		if elma._elapsed > process::Process::last_update(&sender) + process::Process::period(&sender) {
@@ -121,106 +89,63 @@ fn test_manager() {
 
     process::Process::_stop(&mut sender);
 	process::Process::_stop(&mut reciever);
+	println!("{}", "maanager stop".green());
 }
 
+/////////////////////////// finished tests /////////////////////////
 #[test]
 fn test_stopwatch() {
 	let start = SystemTime::now();
-	let mut s = stopwatch_mod::Stopwatch {
+	let mut s = stopwatch::Stopwatch {
 	    sw_start_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards"),
 		sw_stop_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards"),
 		sw_total_time:start.duration_since(UNIX_EPOCH).expect("Time went backwards")
 	};
-	stopwatch_mod::Stopwatch::start(&mut s);
-	let mut temp = stopwatch_mod::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
-	stopwatch_mod::Stopwatch::reset(&mut s);
-	temp = stopwatch_mod::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
-	stopwatch_mod::Stopwatch::stop(&mut s);
-	temp = stopwatch_mod::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
+	stopwatch::Stopwatch::start(&mut s);
+	let mut temp = stopwatch::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
+	stopwatch::Stopwatch::reset(&mut s);
+	temp = stopwatch::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
+	stopwatch::Stopwatch::stop(&mut s);
+	temp = stopwatch::Stopwatch::get_nano(&mut s); println!("{:?}", temp);
 }
 
-mod stopwatch_mod {
-    pub struct Stopwatch {
-        pub sw_start_time: std::time::Duration,
-        pub sw_stop_time: std::time::Duration,
-        pub sw_total_time: std::time::Duration,
-	}
+#[test]
+fn test_channel() {
+    //should be able to test now
+	let mut data = channel::Channel {
+        _name:"Data".to_string(),
+        _capacity:10,
+        _queue:VecDeque::new(),
+	};
 
-	impl Stopwatch {
-        pub fn start(&mut self) {
-		    let temp = std::time::SystemTime::now();
-            self.sw_start_time = temp.duration_since(std::time::UNIX_EPOCH)
-                .expect("Time went backwards");
-	        self.sw_stop_time = temp.duration_since(std::time::UNIX_EPOCH)
-                .expect("Time went backwards");
-        }
-        pub fn stop(&mut self) {
-            if self.sw_stop_time == self.sw_start_time {
-			    let temp = std::time::SystemTime::now();
-                self.sw_stop_time = temp.duration_since(std::time::UNIX_EPOCH)
-                    .expect("Time went backwards");
-                self.sw_total_time += self.sw_stop_time - self.sw_start_time;
-            }
-        }
-        pub fn reset(&mut self) {
-		    let temp = std::time::SystemTime::now();
-			
-		    //if running, reset both the start and stop time
-		    if self.sw_stop_time == self.sw_start_time {
-                self.sw_start_time = temp.duration_since(std::time::UNIX_EPOCH)
-                    .expect("Time went backwards");
-	            self.sw_stop_time = temp.duration_since(std::time::UNIX_EPOCH)
-                    .expect("Time went backwards");
-			}
-			
-            self.sw_total_time = std::time::Duration::new(0, 0);
-        }
-  
-        pub fn get_sec(&self) -> u64 {
-		    if self.sw_stop_time == self.sw_start_time {
-			    let temp = std::time::SystemTime::now();
-                let temp_time = temp.duration_since(std::time::UNIX_EPOCH)
-				    .expect("Time went backwards") -
-				    self.sw_start_time;
-    	        temp_time.as_secs()
-			} else {
-			    self.sw_total_time.as_secs()
-			}
-	    }
-        pub fn get_milli(&self) -> u64 {
-		    if self.sw_stop_time == self.sw_start_time {
-			    let temp = std::time::SystemTime::now();
-                let temp_time = temp.duration_since(std::time::UNIX_EPOCH)
-				    .expect("Time went backwards") -
-				    self.sw_start_time;
-    	        temp_time.as_secs() * 1000 +
-	                self.sw_total_time.subsec_nanos() as u64 / 1_000_000
-			} else {
-			    self.sw_total_time.as_secs() * 1000 +
-	                self.sw_total_time.subsec_nanos() as u64 / 1_000_000
-			}
-	    }
-        pub fn get_nano(&self) -> u64 {
-		    if self.sw_stop_time == self.sw_start_time {
-			    let temp = std::time::SystemTime::now();
-                let temp_time = temp.duration_since(std::time::UNIX_EPOCH)
-				    .expect("Time went backwards") -
-				    self.sw_start_time;
-    	        temp_time.as_secs() * 1000_000_000 +
-	                self.sw_total_time.subsec_nanos() as u64
-			} else {
-			    self.sw_total_time.as_secs() * 1000_000_000 +
-	                self.sw_total_time.subsec_nanos() as u64
-			}
-	    }
-    }
+	let test_str = "Data".to_string();
+	let test_cap:usize = 10;
+	assert_eq!(channel::Channel::size(&data), 0);
+	assert_eq!(channel::Channel::empty(&data), true);
+	assert_eq!(channel::Channel::nonempty(&data), false);
+	assert_eq!(channel::Channel::name(&data), &test_str);
+	assert_eq!(channel::Channel::capacity(&data), &test_cap);
+
+	let mut test_vec:VecDeque<f64> = VecDeque::new();
+	test_vec.push_back(1.0);
+	test_vec.push_back(2.0);
+	test_vec.push_back(3.0);
+	test_vec.push_back(4.0);
+	channel::Channel::send(&mut data, 1.0);
+	channel::Channel::send(&mut data, 2.0);
+	channel::Channel::send(&mut data, 3.0);
+	channel::Channel::send(&mut data, 4.0);
+	assert_eq!(channel::Channel::size(&data), 4);
+
+	let mut test_val:f64 = 4.0;
+	assert_eq!(channel::Channel::capacity(&data), &test_cap);
+	assert_eq!(channel::Channel::latest_db(&data), test_val);
+	test_val = 1.0;
+	assert_eq!(channel::Channel::earliest(&data), test_val);
 }
 
 fn main() {
     println!("{}", "App start".green());
 	
-
-	
 	println!("{}", "App end".green());
-	
 }

@@ -1,7 +1,3 @@
-extern crate colored;
-
-use manager::Manager;
-
 #[repr(u8)]
 pub enum StatusEnum { UNINITIALIZED=0, STOPPED, RUNNING }
 
@@ -62,6 +58,4 @@ impl Process {
     pub fn _stop(&mut self) {
         self._status = StatusEnum::STOPPED;
     }
-
-    //Channel& channel(string name) { return _manager_ptr->channel(name); }
 }

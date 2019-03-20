@@ -1,5 +1,3 @@
-extern crate colored;
-
 use std::collections::VecDeque;
 use std::vec::Vec;
     

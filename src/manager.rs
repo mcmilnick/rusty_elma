@@ -30,7 +30,7 @@ impl<'a> Manager<'a> {
     }
     pub fn channel(&self, s : String)->&'a Channel {
         match self._channels.get(&s) {
-            Some(aChannel) => { return aChannel },
+            Some(a_Channel) => { return a_Channel },
             None => { panic!("no channel"); },
         }
     }
