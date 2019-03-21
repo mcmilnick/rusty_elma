@@ -75,24 +75,19 @@ impl Manager {
         }
         return 0
     }
-    /*pub fn ps(&self)->HashMap<String, (String, u64, u64, i64)> {
+    pub fn ps(&self)->HashMap<String, (String, u64, u64, i64)> {
         let mut info : HashMap<String, (String, u64, u64, i64)> = HashMap::new();
 
-        let f1 = |p : &Process| process::Process::status_type_map(p);
-        let f2 = |p : &Process| process::Process::milli_time(p);
-        let f3 = |p : &Process| process::Process::delta(p);
-        let f4 = |p : &Process| process::Process::num_updates(p);
-        let f5 = |p : &Process| process::Process::name(p).to_string();
+        let f1 = |p : &Process| Process::status_type_map(p);
+        let f2 = |p : &Process| Process::milli_time(p);
+        let f3 = |p : &Process| Process::delta(p);
+        let f4 = |p : &Process| Process::num_updates(p);
+        let f5 = |p : &Process| Process::name(p).to_string();
 
         for i in 0..self._processes.len() {
-            match self._processes.get(i) {
-                Some(proc_ptr)=> {
-                    let temp = ( f1(proc_ptr), f2(proc_ptr), f3(proc_ptr), f4(proc_ptr));
-                    info.insert( f5(proc_ptr), temp );
-                },
-                None=> {},
-            }
+            //let temp = ( f1(self._processes[i]), f2(self._processes[i]), f3(self._processes[i]), f4(self._processes[i]));
+            //info.insert( f5(self._processes[i]), temp );
         }
         return info;
-    }*/
+    }
 }
