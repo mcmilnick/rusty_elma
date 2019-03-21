@@ -49,17 +49,31 @@ impl Manager {
         println!("manager starting");
         self.start();
 	    while self._elapsed < runtime {
-            for i in 0..self._processes.len() {
-                if self._elapsed > self._processes[i].last_update() + self._processes[i].period() {
-                    //let dataChan = self._channels
-                    //self._processes[i]._update(data, self._elapsed);
-                };
-            }
+            self.update();
             let temp = SystemTime::now().duration_since(UNIX_EPOCH).expect("Time went backwards");
             self._elapsed = temp - self._start_time;
         }
         self.stop();
         println!("manager stopped");
+    }
+    pub fn update(&mut self) {
+        for i in 0..self._processes.len() {
+            if self._elapsed > self._processes[i].last_update() + self._processes[i].period() {
+                let ind = self.channel("Data".to_string());
+                //this works great, but in the original implementation we would pass the ownership of the channels vector
+                //and channel function to the process, which would operate and then send it back. This doesn'r quite fit with
+                //rust, so I am mulling it over.
+                self._processes[i]._update(&mut self._channels[ind], self._elapsed);
+            };
+        }
+    }
+    pub fn channel(&mut self, name : String)->usize {
+        for i in 0..self._channels.len() {
+            if name == self._channels[i].name().to_string() {
+                return i
+            }
+        }
+        return 0
     }
     /*pub fn ps(&self)->HashMap<String, (String, u64, u64, i64)> {
         let mut info : HashMap<String, (String, u64, u64, i64)> = HashMap::new();
@@ -82,9 +96,3 @@ impl Manager {
         return info;
     }*/
 }
-
-/*
-        Manager& all(std::function<void(Process&)> f);
-        map<string, tuple<string, double, double, int>> ps();
-        Manager& update();
-*/
