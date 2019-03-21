@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use process::*;
 use reciever_proc::Reciever;
 use sender_proc::Sender;
+use std::vec::Vec;
 
 mod process;
 mod channel;
@@ -71,21 +72,23 @@ fn test_channel() {
 fn test_manager_basic() {
 	//when testing, you can pass cargo test -- --nocapture to see printout of realtime values
 	let starter = SystemTime::now();
-	let dur_temp = starter.duration_since(UNIX_EPOCH).expect("Time went backwards");
+	let temp_time = starter.duration_since(UNIX_EPOCH).expect("Time went backwards");
+	let one_sec = Duration::new(1, 0);
+
 	let mut elma = manager::Manager {
 		_processes : std::vec::Vec::new(),
-    	_channels : HashMap::<String, &mut channel::Channel>::new(),
-    	_start_time : dur_temp,
-		_elapsed : dur_temp,
+    	_channels : std::vec::Vec::new(),
+    	_start_time : temp_time,
+		_elapsed : temp_time,
 	};
 
 	let sendvec = vec![1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0];
 	let mut sender = Sender {
 		_idx : 0,
 		_data : sendvec,
-		_period : dur_temp,
-		_previous_update : dur_temp,
-		_last_update : dur_temp,
+		_period : one_sec,
+		_previous_update : temp_time,
+		_last_update : temp_time,
 		_start_time : SystemTime::now(),
 		_name : "sender".to_string(),
 		_num_updates : 0,
@@ -94,9 +97,9 @@ fn test_manager_basic() {
 	let mut reciever = Reciever {
 		_n : 0,
 		_sum : 0.0,
-		_period : dur_temp,
-		_previous_update : dur_temp,
-		_last_update : dur_temp,
+		_period : one_sec,
+		_previous_update : temp_time,
+		_last_update : temp_time,
 		_start_time : SystemTime::now(),
 		_name : "reciever".to_string(),
 		_num_updates : 0,
@@ -108,11 +111,15 @@ fn test_manager_basic() {
         _queue:VecDeque::new(),
 	};
 
-	sender._period = Duration::new(1, 0);
-	reciever._period = Duration::new(1, 0);
+	//let processVec = Vec::new();
+	//processVec.push(&sender);
+	//processVec.push(&reciever);
 
-	Sender::_init(&mut sender);
-	Reciever::_init(&mut reciever); 
+	elma.schedule(&mut sender, one_sec);
+	elma.schedule(&mut reciever, one_sec);
+	elma.add_channel(&mut data);
+	//Sender::_init(&mut sender);
+	//Reciever::_init(&mut reciever); 
 
     elma._start_time = starter.duration_since(UNIX_EPOCH).expect("Time went backwards");
 	elma._elapsed = starter.duration_since(UNIX_EPOCH).expect("Time went backwards") - elma._start_time;

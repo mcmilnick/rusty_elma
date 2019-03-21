@@ -3,6 +3,7 @@ use channel::Channel;
 #[repr(u8)]
 pub enum StatusEnum { _uninitialized=0, _stopped, _running }
 
+//traits can't access fields, so we must suplicate the getters and setters in each impl
 pub trait Process {
     /////////////////// Any functions specific to certain impl /////////////////////////
     fn sum(&self)->f64 { return 0.0; }
@@ -22,6 +23,7 @@ pub trait Process {
     fn set_prev_update(&mut self, pu:std::time::Duration);
     fn set_last_update(&mut self, lu:std::time::Duration);
     fn set_num_update(&mut self, nu:i64);
+    fn set_period(&mut self, per:std::time::Duration);
 
     ///////////////// Functions which should be good over all impl using Process ///////////////////
     fn milli_time(&self)->u64 {

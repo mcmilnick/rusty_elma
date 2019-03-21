@@ -29,6 +29,7 @@ impl Process for Sender {
     fn set_prev_update(&mut self, pu:std::time::Duration) { self._previous_update = pu; }
     fn set_last_update(&mut self, lu:std::time::Duration) { self._last_update = lu; }
     fn set_num_update(&mut self, nu:i64) { self._num_updates = nu; }
+    fn set_period(&mut self, per:std::time::Duration) { self._period = per; }
 
     //overshadows the traits method
     fn _update(&mut self, _c : &mut Channel, _elapsed : std::time::Duration) {

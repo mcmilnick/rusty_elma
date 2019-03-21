@@ -4,26 +4,31 @@ use process::Process;
 use channel::Channel;
 
 #[allow(dead_code)]
-pub struct Manager<'a> {
-    pub _processes : Vec<&'a Process>,
-    pub _channels : HashMap<String, &'a mut Channel>,
+pub struct Manager {
+    pub _processes : Vec<String>,
+    pub _channels : Vec<String>,
     pub _start_time : std::time::Duration,
 	pub _elapsed : std::time::Duration,
 }
 
 #[allow(dead_code)]
-impl<'a> Manager<'a> {
+impl Manager {
     pub fn start_time(&self)->std::time::Duration { self._start_time }
     pub fn elapsed(&self)->std::time::Duration { self._elapsed }
-    pub fn add_channel(&mut self, c : &'a mut Channel) {
-        self._channels.insert(c.name().to_string(), c);
+    pub fn add_channel(&mut self, c : &mut Channel) {
+        self._channels.push(c.name().to_string());
     }
-    /*pub fn schedule(&mut self, p : &'a mut Process, period : std::time::Duration) {
-        p._period = period;
-        self._processes.push(p);
+    pub fn schedule(&mut self, p : &mut Process, period : std::time::Duration) {
+        Process::set_period(p, period);
+        self._processes.push(p.name().to_string());
     }
-    pub fn drop(p : &'a Process) {}
-    pub fn ps(&self)->HashMap<String, (String, u64, u64, i64)> {
+    pub fn drop(&mut self, p : &mut Process) {
+        match self._processes.binary_search(&p.name().to_string()) {
+            Ok(ind) => { self._processes.remove(ind); },
+            _ => {},
+        }
+    }
+    /*pub fn ps(&self)->HashMap<String, (String, u64, u64, i64)> {
         let mut info : HashMap<String, (String, u64, u64, i64)> = HashMap::new();
 
         let f1 = |p : &Process| process::Process::status_type_map(p);
@@ -44,3 +49,15 @@ impl<'a> Manager<'a> {
         return info;
     }*/
 }
+
+/*
+        Manager& all(std::function<void(Process&)> f);
+
+        Manager& init();
+        Manager& start();
+        Manager& stop();
+        Manager& run(high_resolution_clock::duration);
+
+        map<string, tuple<string, double, double, int>> ps();
+        Manager& update();
+*/
