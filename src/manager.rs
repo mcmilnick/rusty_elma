@@ -2,6 +2,8 @@ use std::vec::Vec;
 use std::collections::HashMap;
 use process::Process;
 use channel::Channel;
+use std::boxed;
+use std::time::{SystemTime, UNIX_EPOCH, Duration};
 
 #[allow(dead_code)]
 pub struct Manager {
@@ -28,6 +30,37 @@ impl Manager {
             _ => {},
         }
     }
+    pub fn init(&mut self, vb : &mut Vec<Box<Process>>) {
+        for i in 0..vb.len() {
+            vb[i]._init();
+        }
+        let starter = SystemTime::now();
+        self._start_time = starter.duration_since(UNIX_EPOCH).expect("Time went backwards");
+	    self._elapsed = starter.duration_since(UNIX_EPOCH).expect("Time went backwards") - self._start_time;
+    }
+    pub fn start(&mut self, vb : &mut Vec<Box<Process>>) {
+        for i in 0..vb.len() {
+            vb[i]._start(self._elapsed);
+        }
+    }
+    pub fn stop(&mut self, vb : &mut Vec<Box<Process>>) {
+        for i in 0..vb.len() {
+            vb[i]._stop();
+        }
+    }
+    pub fn run(&mut self, vb : &mut Vec<Box<Process>>, data : &mut Vec<Box<Channel>>, run_time : u64) {
+        let runtime = Duration::new(run_time, 0);
+	    while self._elapsed < runtime {
+            for i in 0..vb.len() {
+                if self._elapsed > vb[i].last_update() + vb[i].period() {
+                    vb[i]._update(&mut data[0], self._elapsed);
+                };
+            }
+            let temp = SystemTime::now().duration_since(UNIX_EPOCH).expect("Time went backwards");
+            self._elapsed = temp - self._start_time;
+        }
+
+    }
     /*pub fn ps(&self)->HashMap<String, (String, u64, u64, i64)> {
         let mut info : HashMap<String, (String, u64, u64, i64)> = HashMap::new();
 
@@ -52,12 +85,6 @@ impl Manager {
 
 /*
         Manager& all(std::function<void(Process&)> f);
-
-        Manager& init();
-        Manager& start();
-        Manager& stop();
-        Manager& run(high_resolution_clock::duration);
-
         map<string, tuple<string, double, double, int>> ps();
         Manager& update();
 */

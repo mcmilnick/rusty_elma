@@ -8,6 +8,7 @@ use process::*;
 use reciever_proc::Reciever;
 use sender_proc::Sender;
 use std::vec::Vec;
+use std::boxed;
 
 mod process;
 mod channel;
@@ -71,16 +72,10 @@ fn test_channel() {
 #[test]
 fn test_manager_basic() {
 	//when testing, you can pass cargo test -- --nocapture to see printout of realtime values
+	/////////////////////// setup basic data and test types ////////////////////
 	let starter = SystemTime::now();
 	let temp_time = starter.duration_since(UNIX_EPOCH).expect("Time went backwards");
 	let one_sec = Duration::new(1, 0);
-
-	let mut elma = manager::Manager {
-		_processes : std::vec::Vec::new(),
-    	_channels : std::vec::Vec::new(),
-    	_start_time : temp_time,
-		_elapsed : temp_time,
-	};
 
 	let sendvec = vec![1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0];
 	let mut sender = Sender {
@@ -111,38 +106,31 @@ fn test_manager_basic() {
         _queue:VecDeque::new(),
 	};
 
-	//let processVec = Vec::new();
-	//processVec.push(&sender);
-	//processVec.push(&reciever);
+	/////////////////////// setup manager ////////////////////
+	let mut elma = manager::Manager {
+		_processes : std::vec::Vec::new(),
+    	_channels : std::vec::Vec::new(),
+    	_start_time : temp_time,
+		_elapsed : temp_time,
+	};
 
 	elma.schedule(&mut sender, one_sec);
-	elma.schedule(&mut reciever, one_sec);
+    elma.schedule(&mut reciever, one_sec);
 	elma.add_channel(&mut data);
-	//Sender::_init(&mut sender);
-	//Reciever::_init(&mut reciever); 
 
-    elma._start_time = starter.duration_since(UNIX_EPOCH).expect("Time went backwards");
-	elma._elapsed = starter.duration_since(UNIX_EPOCH).expect("Time went backwards") - elma._start_time;
+	let mut procVec : Vec<Box<process::Process>> = Vec::new();
+	procVec.push(Box::new(sender));
+	procVec.push(Box::new(reciever));
+	
+	let mut chanVec : Vec<Box<channel::Channel>> = Vec::new();
+	chanVec.push(Box::new(data));
 
-	Sender::_start(&mut sender, elma._elapsed);
-	Reciever::_start(&mut reciever, elma._elapsed);
+	elma.init(&mut procVec);
+	elma.start(&mut procVec);
 
 	println!("{}", "manager start".green());
-	let runtime = Duration::new(20, 0);
-    while elma._elapsed < runtime {
-		if elma._elapsed > Sender::last_update(&sender) + Sender::period(&sender) {
-			Sender::_update(&mut sender, &mut data, elma._elapsed);
-		};
-		if elma._elapsed > Reciever::last_update(&reciever) + Reciever::period(&reciever) {
-			Reciever::_update(&mut reciever, &mut data, elma._elapsed);
-		};
-
-		let temp = SystemTime::now().duration_since(UNIX_EPOCH).expect("Time went backwards");
-		elma._elapsed = temp - elma._start_time;
-    }
-
-    Sender::_stop(&mut sender);
-	Reciever::_stop(&mut reciever);
+	elma.run(&mut procVec, &mut chanVec, 20);
+	elma.stop(&mut procVec);
 	println!("{}", "maanager stop".green());
 }
 
