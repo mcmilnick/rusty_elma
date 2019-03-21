@@ -59,11 +59,7 @@ impl Manager {
     pub fn update(&mut self) {
         for i in 0..self._processes.len() {
             if self._elapsed > self._processes[i].last_update() + self._processes[i].period() {
-                let ind = self.channel("Data".to_string());
-                //this works great, but in the original implementation we would pass the ownership of the channels vector
-                //and channel function to the process, which would operate and then send it back. This doesn'r quite fit with
-                //rust, so I am mulling it over.
-                self._processes[i]._update(&mut self._channels[ind], self._elapsed);
+                self._processes[i]._update(&mut self._channels, self._elapsed);
             };
         }
     }

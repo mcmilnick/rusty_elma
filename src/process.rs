@@ -7,7 +7,7 @@ pub enum StatusEnum { _uninitialized=0, _stopped, _running }
 pub trait Process {
     /////////////////// Any functions specific to certain impl /////////////////////////
     fn sum(&self)->f64 { return 0.0; }
-    fn _update(&mut self, _c : &mut Channel, _elapsed : std::time::Duration) {}
+    fn _update(&mut self, _c : &mut Vec<Box<Channel>>, _elapsed : std::time::Duration) {}
 
 
     /////////////////// Basic functions to grab constant struct data /////////////////////////////

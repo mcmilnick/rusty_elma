@@ -32,13 +32,25 @@ impl Process for Sender {
     fn set_period(&mut self, per:std::time::Duration) { self._period = per; }
 
     //overshadows the traits method
-    fn _update(&mut self, _c : &mut Channel, _elapsed : std::time::Duration) {
+    fn _update(&mut self, _c : &mut Vec<Box<Channel>>, _elapsed : std::time::Duration) {
         self._previous_update = self._last_update;
         self._last_update = _elapsed;
         self._num_updates =  self._num_updates + 1;
 
-        _c.send(self._data[self._idx]);
-        self._idx = self._idx + 1;
-        if self._idx==self._data.len() { self._idx=0; }
+        let name_of_chan : String = "Data".to_string();
+        let mut ind = 0;
+        let mut chan_exists = false;
+        for i in 0.._c.len() {
+            if name_of_chan == _c[i].name().to_string() {
+                ind = i;
+                chan_exists = true;
+            }
+        }
+
+        if true == chan_exists {
+            _c[ind].send(self._data[self._idx]);
+            self._idx = self._idx + 1;
+            if self._idx==self._data.len() { self._idx=0; }
+        }
     }
 }

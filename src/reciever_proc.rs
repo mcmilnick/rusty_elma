@@ -31,14 +31,24 @@ impl Process for Reciever {
     fn set_period(&mut self, per:std::time::Duration) { self._period = per; }
 
     //overshadows the traits method
-    fn _update(&mut self, _c : &mut Channel, _elapsed : std::time::Duration) {
+    fn _update(&mut self, _c : &mut Vec<Box<Channel>>, _elapsed : std::time::Duration) {
         self._previous_update = self._last_update;
         self._last_update = _elapsed;
         self._num_updates =  self._num_updates + 1;
 
-        if _c.nonempty() {
+        let name_of_chan : String = "Data".to_string();
+        let mut ind = 0;
+        let mut chan_exists = false;
+        for i in 0.._c.len() {
+            if name_of_chan == _c[i].name().to_string() {
+                ind = i;
+                chan_exists = true;
+            }
+        }
+
+        if true == chan_exists && _c[ind].nonempty() {
             self._sum = 0.0;
-            let data = _c.latest_vec(_c.size());
+            let data = _c[ind].latest_vec(_c[ind].size());
             self._sum = data.iter().sum(); 
             println!("recieved sum is: {:?}", self._sum);
         }
