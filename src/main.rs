@@ -105,7 +105,7 @@ fn test_manager_basic() {
         _queue:VecDeque::new(),
 	};
 
-	/////////////////////// setup manager ////////////////////
+	/////////////////////// declare manager ////////////////////
 	let mut elma = manager::Manager {
 		_processes : std::vec::Vec::new(),
     	_channels : std::vec::Vec::new(),
@@ -113,25 +113,25 @@ fn test_manager_basic() {
 		_elapsed : zero_time,
 	};
 
+	//schedule each process
 	elma.schedule(&mut sender, one_sec);
     elma.schedule(&mut reciever, one_sec);
-	elma.add_channel(&mut data);
 
-	//need to make the processes and channels into boxes to send into the manager
+	//package the processes
 	let mut procVec : Vec<Box<process::Process>> = Vec::new();
 	procVec.push(Box::new(sender));
 	procVec.push(Box::new(reciever));
-	
+	//package the channels
 	let mut chanVec : Vec<Box<channel::Channel>> = Vec::new();
 	chanVec.push(Box::new(data));
 
-	///////////////// run manager ////////////////////
-	elma.init(&mut procVec);
-	println!("{}", "manager starting".green());
-	elma.start(&mut procVec);
-	elma.run(&mut procVec, &mut chanVec, 10);
-	elma.stop(&mut procVec);
-	println!("{}", "maanager stopped".green());
+	//transfer ownership off all processes and channels to the manager
+	elma.set_processes(procVec);
+	elma.add_channel(chanVec);
+
+	///////////////// run manager for 10 seconds ////////////////////
+	elma.init();
+	elma.run(Duration::new(10, 0) );
 }
 
 fn main() {

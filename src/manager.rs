@@ -7,59 +7,59 @@ use std::time::{SystemTime, UNIX_EPOCH, Duration};
 
 #[allow(dead_code)]
 pub struct Manager {
-    pub _processes : Vec<String>,
-    pub _channels : Vec<String>,
+    pub _processes : Vec<Box<Process>>,
+    pub _channels : Vec<Box<Channel>>,
     pub _start_time : std::time::Duration,
 	pub _elapsed : std::time::Duration,
 }
 
 #[allow(dead_code)]
 impl Manager {
+    pub fn set_processes(&mut self, vb : Vec<Box<Process>>) {
+        self._processes = vb;
+    }
     pub fn start_time(&self)->std::time::Duration { self._start_time }
     pub fn elapsed(&self)->std::time::Duration { self._elapsed }
-    pub fn add_channel(&mut self, c : &mut Channel) {
-        self._channels.push(c.name().to_string());
+    pub fn add_channel(&mut self, cv : Vec<Box<Channel>>) {
+        self._channels = cv;
     }
     pub fn schedule(&mut self, p : &mut Process, period : std::time::Duration) {
         Process::set_period(p, period);
-        self._processes.push(p.name().to_string());
     }
-    pub fn drop(&mut self, p : &mut Process) {
-        match self._processes.binary_search(&p.name().to_string()) {
-            Ok(ind) => { self._processes.remove(ind); },
-            _ => {},
-        }
-    }
-    pub fn init(&mut self, vb : &mut Vec<Box<Process>>) {
-        for i in 0..vb.len() {
-            vb[i]._init();
+    pub fn drop(&mut self, p : &mut Process) {}
+    pub fn init(&mut self) {
+        for i in 0..self._processes.len() {
+            self._processes[i]._init();
         }
         let starter = SystemTime::now();
         self._start_time = starter.duration_since(UNIX_EPOCH).expect("Time went backwards");
 	    self._elapsed = starter.duration_since(UNIX_EPOCH).expect("Time went backwards") - self._start_time;
     }
-    pub fn start(&mut self, vb : &mut Vec<Box<Process>>) {
-        for i in 0..vb.len() {
-            vb[i]._start(self._elapsed);
+    pub fn start(&mut self) {
+        for i in 0..self._processes.len() {
+            self._processes[i]._start(self._elapsed);
         }
     }
-    pub fn stop(&mut self, vb : &mut Vec<Box<Process>>) {
-        for i in 0..vb.len() {
-            vb[i]._stop();
+    pub fn stop(&mut self) {
+        for i in 0..self._processes.len() {
+            self._processes[i]._stop();
         }
     }
-    pub fn run(&mut self, vb : &mut Vec<Box<Process>>, data : &mut Vec<Box<Channel>>, run_time : u64) {
-        let runtime = Duration::new(run_time, 0);
+    pub fn run(&mut self, runtime : std::time::Duration) {
+        println!("manager starting");
+        self.start();
 	    while self._elapsed < runtime {
-            for i in 0..vb.len() {
-                if self._elapsed > vb[i].last_update() + vb[i].period() {
-                    vb[i]._update(&mut data[0], self._elapsed);
+            for i in 0..self._processes.len() {
+                if self._elapsed > self._processes[i].last_update() + self._processes[i].period() {
+                    //let dataChan = self._channels
+                    //self._processes[i]._update(data, self._elapsed);
                 };
             }
             let temp = SystemTime::now().duration_since(UNIX_EPOCH).expect("Time went backwards");
             self._elapsed = temp - self._start_time;
         }
-
+        self.stop();
+        println!("manager stopped");
     }
     /*pub fn ps(&self)->HashMap<String, (String, u64, u64, i64)> {
         let mut info : HashMap<String, (String, u64, u64, i64)> = HashMap::new();
