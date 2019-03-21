@@ -118,6 +118,7 @@ fn test_manager_basic() {
     elma.schedule(&mut reciever, one_sec);
 	elma.add_channel(&mut data);
 
+	//need to make the processes and channels into boxes to send into the manager
 	let mut procVec : Vec<Box<process::Process>> = Vec::new();
 	procVec.push(Box::new(sender));
 	procVec.push(Box::new(reciever));
@@ -125,13 +126,13 @@ fn test_manager_basic() {
 	let mut chanVec : Vec<Box<channel::Channel>> = Vec::new();
 	chanVec.push(Box::new(data));
 
+	///////////////// run manager ////////////////////
 	elma.init(&mut procVec);
+	println!("{}", "manager starting".green());
 	elma.start(&mut procVec);
-
-	println!("{}", "manager start".green());
-	elma.run(&mut procVec, &mut chanVec, 20);
+	elma.run(&mut procVec, &mut chanVec, 10);
 	elma.stop(&mut procVec);
-	println!("{}", "maanager stop".green());
+	println!("{}", "maanager stopped".green());
 }
 
 fn main() {
