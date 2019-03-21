@@ -73,17 +73,16 @@ fn test_channel() {
 fn test_manager_basic() {
 	//when testing, you can pass cargo test -- --nocapture to see printout of realtime values
 	/////////////////////// setup basic data and test types ////////////////////
-	let starter = SystemTime::now();
-	let temp_time = starter.duration_since(UNIX_EPOCH).expect("Time went backwards");
 	let one_sec = Duration::new(1, 0);
+	let zero_time = Duration::new(0, 0);
 
 	let sendvec = vec![1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0];
 	let mut sender = Sender {
 		_idx : 0,
 		_data : sendvec,
 		_period : one_sec,
-		_previous_update : temp_time,
-		_last_update : temp_time,
+		_previous_update : zero_time,
+		_last_update : zero_time,
 		_start_time : SystemTime::now(),
 		_name : "sender".to_string(),
 		_num_updates : 0,
@@ -93,8 +92,8 @@ fn test_manager_basic() {
 		_n : 0,
 		_sum : 0.0,
 		_period : one_sec,
-		_previous_update : temp_time,
-		_last_update : temp_time,
+		_previous_update : zero_time,
+		_last_update : zero_time,
 		_start_time : SystemTime::now(),
 		_name : "reciever".to_string(),
 		_num_updates : 0,
@@ -110,8 +109,8 @@ fn test_manager_basic() {
 	let mut elma = manager::Manager {
 		_processes : std::vec::Vec::new(),
     	_channels : std::vec::Vec::new(),
-    	_start_time : temp_time,
-		_elapsed : temp_time,
+    	_start_time : zero_time,
+		_elapsed : zero_time,
 	};
 
 	elma.schedule(&mut sender, one_sec);
