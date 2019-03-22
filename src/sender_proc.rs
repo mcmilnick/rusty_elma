@@ -1,6 +1,6 @@
 use std::vec::Vec;
-use channel::Channel;
-use process::*;
+use crate::channel::Channel;
+use crate::process::*;
 
 //virtual functions that were part of Process need to be implemented in their own mod with an instance of a process
 pub struct Sender {

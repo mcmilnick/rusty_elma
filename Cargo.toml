@@ -1,7 +1,8 @@
 [package]
-name = "rust_build"
-version = "1.0.0"
-authors = ["Nick McMillan"]
+name = "elma_builder"
+version = "0.1.0"
+authors = ["nick"]
+edition = "2018"
 
 [dependencies]
 colored = "1.6"

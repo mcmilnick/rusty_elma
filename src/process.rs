@@ -1,4 +1,4 @@
-use channel::Channel;
+use crate::channel::Channel;
 
 #[repr(u8)]
 pub enum StatusEnum { _uninitialized=0, _stopped, _running }

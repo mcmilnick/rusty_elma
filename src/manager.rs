@@ -1,7 +1,7 @@
 use std::vec::Vec;
 use std::collections::HashMap;
-use process::Process;
-use channel::Channel;
+use crate::process::Process;
+use crate::channel::Channel;
 use std::boxed;
 use std::time::{SystemTime, UNIX_EPOCH, Duration};
 
