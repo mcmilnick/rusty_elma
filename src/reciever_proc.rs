@@ -1,6 +1,5 @@
 use crate::channel::Channel;
-use crate::process::*;
-use crate::process::StatusEnum;
+use crate::process::{ Process, StatusEnum};
 
 //virtual functions that were part of Process need to be implemented in their own mod with an instance of a process
 pub struct Reciever {

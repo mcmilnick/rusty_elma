@@ -1,14 +1,7 @@
-extern crate colored;
 #[cfg(test)]
 extern crate elma_builder;
 
-use colored::*;
 use std::time::{SystemTime, UNIX_EPOCH, Duration};
-use std::collections::VecDeque;
-use std::collections::HashMap;
-use elma_builder::process::*;
-use std::vec::Vec;
-use std::boxed;
 use elma_builder::stopwatch::Stopwatch;
 
 #[test]

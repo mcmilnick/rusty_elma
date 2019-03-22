@@ -1,19 +1,15 @@
-extern crate colored;
 #[cfg(test)]
 extern crate elma_builder;
+extern crate colored;
 
 use colored::*;
 use std::time::{SystemTime, UNIX_EPOCH, Duration};
-use std::collections::VecDeque;
-use std::collections::HashMap;
-use elma_builder::process::*;
+use std::collections::{VecDeque, HashMap};
 use elma_builder::process;
-use elma_builder::channel;
 use elma_builder::channel::Channel;
-use elma_builder::process::Process;
 use elma_builder::reciever_proc::Reciever;
 use elma_builder::sender_proc::Sender;
-use elma_builder::manager;
+use elma_builder::manager::Manager;
 use std::vec::Vec;
 use std::boxed;
 
@@ -34,7 +30,7 @@ fn test_manager_basic_refined() {
 		_start_time : SystemTime::now(),
 		_name : "sender".to_string(),
 		_num_updates : 0,
-		_status : StatusEnum::_uninitialized,
+		_status : process::StatusEnum::_uninitialized,
 	};
 	let mut reciever = Reciever {
 		_n : 0,
@@ -45,9 +41,9 @@ fn test_manager_basic_refined() {
 		_start_time : SystemTime::now(),
 		_name : "reciever".to_string(),
 		_num_updates : 0,
-		_status : StatusEnum::_uninitialized,	
+		_status : process::StatusEnum::_uninitialized,	
 	};
-	let mut data = channel::Channel {
+	let mut data = Channel {
         _name:"Data".to_string(),
         _capacity:10,
         _queue:VecDeque::new(),
@@ -58,11 +54,11 @@ fn test_manager_basic_refined() {
 	procVec.push(Box::new(sender));
 	procVec.push(Box::new(reciever));
 	//package the channels
-	let mut chanVec : Vec<Box<channel::Channel>> = Vec::new();
+	let mut chanVec : Vec<Box<Channel>> = Vec::new();
 	chanVec.push(Box::new(data));
 
 	/////////////////////// declare manager ////////////////////
-	let mut elma = manager::Manager {
+	let mut elma = Manager {
 		_processes : procVec,
     	_channels : chanVec,
     	_start_time : zero_time,
@@ -93,7 +89,7 @@ fn test_manager_basic() {
 		_start_time : SystemTime::now(),
 		_name : "sender".to_string(),
 		_num_updates : 0,
-		_status : StatusEnum::_uninitialized,
+		_status : process::StatusEnum::_uninitialized,
 	};
 	let mut reciever = Reciever {
 		_n : 0,
@@ -104,16 +100,16 @@ fn test_manager_basic() {
 		_start_time : SystemTime::now(),
 		_name : "reciever".to_string(),
 		_num_updates : 0,
-		_status : StatusEnum::_uninitialized,	
+		_status : process::StatusEnum::_uninitialized,	
 	};
-	let mut data = channel::Channel {
+	let mut data = Channel {
         _name:"Data".to_string(),
         _capacity:10,
         _queue:VecDeque::new(),
 	};
 
 	/////////////////////// declare manager ////////////////////
-	let mut elma = manager::Manager {
+	let mut elma = Manager {
 		_processes : std::vec::Vec::new(),
     	_channels : std::vec::Vec::new(),
     	_start_time : zero_time,
@@ -125,7 +121,7 @@ fn test_manager_basic() {
     elma.schedule(&mut reciever, one_sec);
 
 	//package the processes
-	let mut procVec : Vec<Box<Process>> = Vec::new();
+	let mut procVec : Vec<Box<process::Process>> = Vec::new();
 	procVec.push(Box::new(sender));
 	procVec.push(Box::new(reciever));
 	//package the channels
