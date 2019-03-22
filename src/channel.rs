@@ -1,6 +1,16 @@
 use std::collections::VecDeque;
 use std::vec::Vec;
 
+/// # Arguments
+/// 
+/// * `_name` - A string holding the name of the channel instantiation.
+/// * `_capacity` - This contains the total capacity of the channel.
+/// * `_queue` - A queue where all data is placed in and read out from the channel. 
+/// 
+/// # Remarks
+/// 
+/// All ELMA channels are meant to have the same fields. For this reason, all Channel fields are described in
+/// the Channel struct.
 #[allow(dead_code)]
 pub struct Channel {
     pub _name : String,
@@ -8,6 +18,11 @@ pub struct Channel {
     pub _queue : VecDeque<f64>,
 }
 
+/// # Remarks
+/// 
+/// The implementation of Channel shares fields from the pub struct Channel. This means that when a channel object
+/// is created the object contains fields from the struct and one may operate on the object using the impl functions.
+/// The given functions allow for full read/write access to the _capacity and _queue, but the _name is read only.
 #[allow(dead_code)]
 impl Channel {
     pub fn size(&self)->usize { self._queue.len() }
