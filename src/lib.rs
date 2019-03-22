@@ -1,5 +1,5 @@
 /// # Remarks
-/// The libs file collects all modules used for elma and compiles them into a library file.
+/// The lib collects the following modules as they are used for elma. They are compiled into a library file.
 /// This elma library can then be included elsewhere such as it is in the test /test directory.
 
 pub mod process;
