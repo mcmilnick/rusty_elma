@@ -4,6 +4,7 @@ pub mod manager;
 pub mod stopwatch;
 pub mod sender_proc;
 pub mod reciever_proc;
+pub mod basic_process;
 
 #[cfg(test)]
 mod tests {

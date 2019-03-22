@@ -27,8 +27,8 @@ pub trait Process {
 
     ///////////////// Functions which should be good over all impl using Process ///////////////////
     fn milli_time(&self)->u64 {
-        let temp_time = Process::last_update(self);
-    	temp_time.as_secs() * 1000 as u64
+    	(self.last_update().as_secs() * 1000 as u64) +
+            (self.last_update().subsec_nanos() as u64) / 1000_000
     }
     fn status_type_map(&self)->String {
         match Process::status(self) {
@@ -39,7 +39,8 @@ pub trait Process {
 	}
     fn delta(&self)->u64 {
         let temp_time = Process::last_update(self) - Process::previous_update(self);
-    	temp_time.as_secs() * 1000 as u64
+        (temp_time.as_secs() * 1000 as u64) +
+            (temp_time.subsec_nanos() as u64) / 1000_000
     }
     fn _init(&mut self) {
         Process::set_status(self, StatusEnum::_stopped);
