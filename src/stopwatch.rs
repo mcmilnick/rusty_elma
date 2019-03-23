@@ -18,6 +18,10 @@ pub struct Stopwatch {
     pub sw_total_time: Duration,
 }
 
+/// # Remarks
+/// 
+/// The fn should resemble buttons on a stopwatch for the most part. The start, stop, and reset all do what they imply to the total time counter.
+/// The other fn are used for getting the current time in different units. 
 #[allow(dead_code)]
 impl Stopwatch {
     pub fn start(&mut self) {

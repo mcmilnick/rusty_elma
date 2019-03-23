@@ -34,7 +34,6 @@ fn test_manager_basic() {
 		_status : process::StatusEnum::_uninitialized,
 	};
 	let mut reciever = Reciever {
-		_n : 0,
 		_sum : 0.0,
 		_period : one_msec,
 		_previous_update : zero_time,
