@@ -1,16 +1,35 @@
 # rusty_elma
 
-///////////////////////////////////////// Goals /////////////////////////////////////////
+//////////////////////////////////////// Note on Organization //////////////////////////
+Please note the following organization. For grading purposes I have left in the goals and milestones previously written, but you will find them all the way at the bottom of this README.
 
-This repo aims to port the ELMA project into the programming language Rust. ELMA is a task management system developed by klavins (see the following link).
+//////////////////////////////////// An intro to Rusty Elma /////////////////////////////
+Rusty Elma aims to be a port of the ELMA project written in C++ into the Rust programming language. ELMA is a task management system developed by klavins (see the following link).
 https://github.com/klavins/ECEP520
-The ELMA manager aims to manage different processes for an embedded system. The goal of this project is to recreate this system using Rust.
-For this project, I will be porting over the manager, process system, events and state machine. The functionality should be the same with the hope that the code is cleaner since Rust is supossed to remove some of the less friendly functionality of C and C++.
-  To achieve this goal, I will need to learn Rust from scratch. The book, "Programming Rust: Fast, Safe Systems Development" should be of great help in this task. This will purely be a task in understanding the differences from C, C++, and Rust. There are many differences in memory management and task managing. To get some examples of how to properly write Rust and the style guidelines to follow I will also use the Rust github shown below...
-https://github.com/rust-lang
-While porting over the different pieces of ELMA, I will be writing test cases and examples to prove the functionality and give an idea how to use this new version of ELMA.  
-  
- Week 1 of final project -
+Rusty Elma aims to be a management system wherein one can create different processes, data channels, and events. In the management system of Elma, one can then have all of these sub-systems talk to each other and coexist.
+
+//////////////////////////////////// Rust directory explanation /////////////////////////////
+
+
+//////////////////////////// Rust Learnings and Explanation /////////////////////////////
+
+
+///////////////////////////////// Recommended Resources /////////////////////////////
+-	The book, "Programming Rust: Fast, Safe Systems Development" was essential for me. I would not have been able to do this project without sitting down and reading this book (As of the project deadline I am about 200 pages in).
+-	https://doc.rust-lang.org/std/
+The rust crate documentation is amazing.
+-	https://blog.jawg.io/docker-multi-stage-build/
+This helped me get off the ground in using Rust with Docker
+-	https://facility9.com/2016/05/writing-documentation-in-rust/
+This was a nice simple intro to the Rustdocs comments system in rust
+-	https://doc.rust-lang.org/book/index.html
+This online documentation of Rust is superb
+-	http://squidarth.com/rc/rust/2018/05/31/rust-borrowing-and-ownership.html
+Found this one very nice post on ownership and the pointers in Rust
+
+
+   Week 1 of final project -
+ 
 ///////////////////////////////////////// Milestones /////////////////////////////////////////
 1. Study Rust equivalents from C and C++. I aim to find the apprioriate ways to handle memory, do basic print debug, and what the structure types are in Rust.
 Deadline - 3/9/2019
@@ -35,6 +54,7 @@ Deadline - 3/21/2019
 
 
 Week 2 of final project -
+
 ////////////////////////////// Finished goals //////////////////////////////////
 This week I accomplished a couple things.
 - I did a lot of studying of Rust. This took quite a bit of time given it is a new language. I made it through quite a bit of the Programming rust book I mentioned before, which allowed me to get a good running start at the code.
@@ -67,3 +87,16 @@ Deadline - 3/19/2019
 Deadline - 3/20/2019
 7. Finalize and publish project
 Deadline - 3/21/2019
+
+
+Finalized Final Project -
+/////////////////////////////// Unfinished Milestones ////////////////////////////////////////
+1. Implement events in the rust version of Elma.
+2. Use the emit and watch functionality of Elma written in Rust to test the new event system
+
+/////////////////////////////// Comments on Goals Achieved ////////////////////////////
+Throughout this project I thought I would finish up through the events system with emit and watch in Rusty Elma. I was a little over ambitious in my goals, but I am still very pleased with what I got done.
+The issue, was that for me personally there was a larger learning curve to Rust than anticipated. My initial thoughts were that I would jump in and it would be enough like C and C++ to just plow out the code. As it turns out, though there are many similarities to the languages in the syntax, the overarching rules and design stratagems are completely different. As a consequence, I wrote out the channel system, process system, and manager system in isolation, then when I went to integrate them they needed a full redesign. The issue is that Elma relies on sharing information between channels, processes, and manager through pointers to the classes. In Rust, while possible, this is not good Rust practice. You can believe me, I tried with all my might to break the compiler. I sincerely attempted to create unsafe C pointers, declare them as reference counters, assign them to other objects dynamically, pass them into other functions, and dereference them there. The compiler still caught my unsafe practices and prevented me from doing what I needed. Then I redesigned.
+It took me two full redesigns and a lot more research into Rust to piece together an appropriate way to store the processes and channels within the manager using the box system. Then lending information between sub-systems became reasonable. This, along with plenty of other small learnings in the language surprised me.
+In the end there are two large takeaways for me. The first is that one should come into learning a new language paying more attention to the paradigms set forth for that language. The second is that I love Rust. It has all the benefits of C, with the addition of some major improvements in C++, but alleviates all the huge issues with both languages. I can already say that through doing Rust it has made me think about how I write C on a daily basis.
+Thought I did not manage to get as far as intended, I learned far more about the language than anticipated and I very much like it. In addition, while I will first allow the grading process to occur, I will likely continue iterating on this project just because I think its fun. I eventually want to learn enough Rust to use it in embedded systems, which requires I do far more work into learning how to use external system, unsafe systems, how to integrate interrupts, etc.
