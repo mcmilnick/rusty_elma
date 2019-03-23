@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["basic_process",""],["channel",""],["manager",""],["process","Remarks The lib collects the following modules as they are used for elma. They are compiled into a library file. This elma library can then be included elsewhere such as it is in the test /test directory."],["reciever_proc",""],["sender_proc",""],["stopwatch",""]]});
