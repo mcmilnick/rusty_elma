@@ -9,7 +9,16 @@ https://github.com/klavins/ECEP520
 Rusty Elma aims to be a management system wherein one can create different processes, data channels, and events. In the management system of Elma, one can then have all of these sub-systems talk to each other and coexist.
 
 //////////////////////////////////// Using the Code ////////////////////////////////////////
-
+To use the code…
+1.	Pull from the repo
+2.	Build the docker file with
+Docker build -t rust_cont -f rust_interactive.dockerfile .
+3.	Run the container with
+docker run -it -v $PWD:/source rust_cont bash
+4.	Build elma with “Cargo build”
+5.	Running the code does nothing since there is no code in main. This would normally be done with “cargo run”
+6.	Run all tests cases with output using “cargo test -- --nocapture”
+7.	Compile all documentation with “cargo doc”
 
 //////////////////////////////////// Rust directory explanation /////////////////////////////
 The first thing to do when creating a rust directory is to use the command
