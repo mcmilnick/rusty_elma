@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["StatusEnum",""]],"trait":[["Process","Remarks"]]});
