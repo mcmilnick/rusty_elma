@@ -1,5 +1,16 @@
 use std::time::{SystemTime, UNIX_EPOCH, Duration};
 
+/// # Arguments
+/// 
+/// * `sw_start_time` - Contains the time at which the start 'button' is hit on the stopwatch.
+/// * `sw_stop_time` - Contains the time time at which the stop 'button' is hit on the stopwatch.
+/// * `sw_total_time` - This is the total time between all start and stop sequences. This is reset when the reset 'button' is hit.
+/// If one continues to hit start after stop continuously then the time will add into total time. 
+
+/// # Remarks
+/// 
+/// The stopwatch structure is for use with the stopwatch implementation only. This was created mainly for learning rust and as a
+/// nice way to debug the other portions of the manager as I was creating them.
 #[allow(dead_code)]
 pub struct Stopwatch {
     pub sw_start_time: Duration,
